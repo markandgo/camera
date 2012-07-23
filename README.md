@@ -1,35 +1,34 @@
-hump.camera
-===========
+# hump.camera
 
-An edit of vrld's camera module. See for details: [HUMP] (http://vrld.github.com/hump/)
+This is an edit of vrld's camera module. See for details: [HUMP] (http://vrld.github.com/hump/)
 
-Requires the shapes module from vrld to work! See for details: [Hardon Collider] (http://vrld.github.com/HardonCollider/index.html)
+It requires the shapes module from vrld to work! See for details: [Hardon Collider] (http://vrld.github.com/HardonCollider/index.html)
 
-This version allows each camera object to have a custom viewport shape. Creating a new camera object has a new argument to determine the shape of the camera. Shapes must be convex.
+This version allows each camera object to have a custom shape. The function to create a new camera object has a new argument to determine its shape. Shapes must be convex to work properly.
 
 ````lua
 newCamera = require 'camera'
 cam1 = newCamera(x,y,zoom,r,shape) -- where shape is a shape defined by the shapes module
 ````
--------------------
-## Camera functions
 
-You can transform the scene like the original module with the camera's methods. There also some new functions to play with:
+## Camera Functions
 
-`camera:worldContains(x,y)` returns `true` if your scene's point is within the viewport's shape.
+You can transform the scene like the original module with the camera's methods. There are also some new functions to play with:
+
+`camera:worldContains(x,y)` returns `true` if your scene's point is within the shape.
 
 `camera:worldBbox()` returns `x1,y1,x2,y2`, which are the scene's coordinates of your viewport's axis aligned bounding box. `(x1,y1)` and `(x2,y2)` are the opposite vertices of the box.
 
-`camera:worldIntersectsRay(x,y,dx,dy)` returns `true` if your scene's ray is intersecting your viewport's shape.
--------------------
-## Camera shape's functions
+`camera:worldIntersectsRay(x,y,dx,dy)` returns `true` if your scene's ray is intersecting your shape.
 
-Using the shape's methods for each camera object allows you to manipulate the shape of the camera without transforming the scene. There also two new methods for each shape:
+## Shape Functions
+
+Using the shape's methods for each camera object allows you to manipulate its shape without transforming the scene. There also two new methods for each shape:
 
 `camera.shape:setScale(s)` sets the absolute scale of the shape.
 
 `camera.shape:getScale(s)` returns the absolute scale of the shape.
--------------------
+
 ## Example
 
 ````lua
