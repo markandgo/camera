@@ -47,3 +47,7 @@ cam1.shape:move(10,0), cam1.shape:scale(2)
 -- move the scene 10 units along the y-axis, and rotate the scene
 cam1:move(0,10), cam1.r = cam1.r + math.pi
 ````
+
+## Demos
+
+LOVE demo's can be found in the downloads section.
