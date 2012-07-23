@@ -4,7 +4,7 @@ This is an edit of vrld's camera module. See for details: [HUMP] (http://vrld.gi
 
 It requires the shapes module from vrld to work! See for details: [Hardon Collider] (http://vrld.github.com/HardonCollider/index.html)
 
-This version allows each camera object to have a custom shape. The function to create a new camera object has a new argument to determine its shape. Shapes must be convex to work properly.
+This version allows each camera object to have a custom shape. This allows you to limit drawing operations to the shape's boundary. The function to create a new camera object has a new argument to determine its shape. Shapes must be convex to work properly.
 
 ````lua
 newCamera = require 'camera'
