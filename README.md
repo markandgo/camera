@@ -1,5 +1,7 @@
 # hump.camera
 
+Original LOVE thread: [link] (https://love2d.org/forums/viewtopic.php?f=5&t=10124)
+
 This is an edit of vrld's camera module. See for details: [HUMP] (http://vrld.github.com/hump/)
 
 It requires the shapes module from vrld to work! See for details: [Hardon Collider] (http://vrld.github.com/HardonCollider/index.html)
