@@ -30,7 +30,6 @@ local lg = love.graphics
 
 local camera = {}
 camera.__index = camera
-camera.debug = false -- draw boundaries for debug mode
 -------------------
 -- public interface
 -------------------
@@ -80,21 +79,6 @@ end
 function camera:move(x,y)
 	self.x, self.y = self.x + x, self.y + y
 	return self
-end
-
-function camera:drawInfo()
-	if self.debug then
-		love.graphics.setColor(100,100,100)
-		local msg_t = {}
-		self.shape:draw('line')
-		-- transform view in viewport
-		local shapecx,shapecy = self.shape:center()
-		local mx,my = self:mousepos()
-		mx,my = math.floor(mx),math.floor(my)
-		msg_t[1] = 'center:' .. '(' .. self.x .. ',' .. self.y .. ')'
-		msg_t[2] = 'mouse world coords:' .. '(' .. mx .. ',' .. my .. ')'
-		love.graphics.print(table.concat(msg_t,'\n'),shapecx,shapecy)
-	end
 end
 
 function camera:attach()
@@ -162,5 +146,5 @@ function camera:worldIntersectsRay(x,y,dx,dy)
 end
 
 -- the module
-return setmetatable(camera,
+return setmetatable({new = new},
 	{__call = function(_, ...) return new(...) end})
