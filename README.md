@@ -1,47 +1,48 @@
-HUMP - Helper Utilities for Massive Progression
-===============================================
+hump.camera
+===========
 
-__HUMP__ is a small collection of tools for developing games with L&Ouml;VE.
+An edit of vrld's camera module. See for details: [HUMP] (http://vrld.github.com/hump/)
 
-Contents:
-------------
+Requires the shapes module from vrld to work! See for details: [Hardon Collider] (http://vrld.github.com/HardonCollider/index.html)
 
-*   *gamestate.lua*: class to handle gamestates.
-*   *timer.lua*: timed function calls and interpolation function wrappers.
-*   *vector.lua*: powerful vector class.
-*   *vector-light.lua*: lightweight implementation of the above (for optimisation purposes - potentially leads to ugly code).
-*   *class.lua*: "class" system supporting function inheritance.
-*   *camera.lua*: move-, zoom- and rotatable camera.
-*   *ringbuffer.lua*: a circular container.
+This version allows each camera object to have a custom viewport shape. Creating a new camera object has a new argument to determine the shape of the camera. Shapes must be convex.
 
-Documentation
-=============
+````lua
+newCamera = require 'camera'
+cam1 = newCamera(x,y,zoom,r,shape) -- where shape is a shape defined by the shapes module
+````
+-------------------
+## Camera functions
 
-You can find the documentation here: [http://vrld.github.com/hump/](http://vrld.github.com/hump/ "project page")
+You can transform the scene like the original module with the camera's methods. There also some new functions to play with:
 
+`camera:worldContains(x,y)` returns `true` if your scene's point is within the viewport's shape.
 
-License
-=======
-> Copyright (c) 2010-2011 Matthias Richter  
->  
-> Permission is hereby granted, free of charge, to any person obtaining a copy  
-> of this software and associated documentation files (the "Software"), to deal  
-> in the Software without restriction, including without limitation the rights  
-> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell  
-> copies of the Software, and to permit persons to whom the Software is  
-> furnished to do so, subject to the following conditions:  
->  
-> The above copyright notice and this permission notice shall be included in  
-> all copies or substantial portions of the Software.  
->  
-> Except as contained in this notice, the name(s) of the above copyright holders  
-> shall not be used in advertising or otherwise to promote the sale, use or  
-> other dealings in this Software without prior written authorization.  
->  
-> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR  
-> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,  
-> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE  
-> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER  
-> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  
-> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN  
-> THE SOFTWARE.  
+`camera:worldBbox()` returns `x1,y1,x2,y2`, which are the scene's coordinates of your viewport's axis aligned bounding box. `(x1,y1)` and `(x2,y2)` are the opposite vertices of the box.
+
+`camera:worldIntersectsRay(x,y,dx,dy)` returns `true` if your scene's ray is intersecting your viewport's shape.
+-------------------
+## Camera shape's functions
+
+Using the shape's methods for each camera object allows you to manipulate the shape of the camera without transforming the scene. There also two new methods for each shape:
+
+`camera.shape:setScale(s)` sets the absolute scale of the shape.
+
+`camera.shape:getScale(s)` returns the absolute scale of the shape.
+-------------------
+## Example
+
+````lua
+shapes = require'shapes'
+cam = require'camera'
+
+-- create a new camera object
+-- Whence created, the camera will have a circular shape at point (0,0) with radius = 100. The camera will also center on point (10,10) in the scene. 
+cam1 = cam(10,10,1,0,shapes.newCircleShape(0,0,100))
+
+-- move the camera 10 units along the x-axis, and increase the size of the shape
+cam1.shape:move(10,0), cam1.shape:scale(2)
+
+-- move the scene 10 units along the y-axis, and rotate the scene
+cam1:move(0,10), cam1.r = cam1.r + math.pi
+````
