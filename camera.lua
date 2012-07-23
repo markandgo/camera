@@ -97,7 +97,6 @@ end
 function camera:detach()
 	lg.setStencil()
 	lg.pop()
-	self:drawInfo()
 end
 
 function camera:draw(func)
