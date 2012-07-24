@@ -10,12 +10,16 @@ This version allows each camera object to have a custom shape. This allows you t
 
 ````lua
 newCamera = require 'camera'
-cam1 = newCamera(x,y,zoom,r,shape) -- where shape is a shape defined by the shapes module
+cam1 = newCamera(shape,x,y,r,sx,sy) -- where shape is a shape defined by the shapes module
 ````
 
 ## Camera Functions
 
 You can transform the scene like the original module with the camera's methods. There are also some new functions to play with:
+
+`camera:setScale(sx,sy)` sets the scene's scale, sy is equal to sx if omitted
+
+`camera:scale(sx,sy)` scales the scene by this amount, sy is equal to sx if omitted
 
 `camera:worldContains(x,y)` returns `true` if your scene's point is within the shape.
 
