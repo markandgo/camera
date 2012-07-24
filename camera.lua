@@ -33,7 +33,7 @@ camera.__index = camera
 -------------------
 -- public interface
 -------------------
-local function new(x,y,zoom,r,shape)
+local function new(shape,x,y,r,sx,sy)
 	-- new camera with shape boundary
 	shape._invertScale = 1
 	
@@ -65,9 +65,10 @@ local function new(x,y,zoom,r,shape)
 		shape:draw('fill')
 	end)
 	x,y		= x or lg.getWidth()/2, y or lg.getHeight()/2
-	zoom,r	= zoom or 1,r or 0
+	sx = sx or 1
+	sy,r	= sy or sx,r or 0
 	return setmetatable(
-		{x = x, y = y, zoom = zoom, r = r, 
+		{x = x, y = y, sx = sx, sy = sy, r = r, 
 		_stencil = _stencil,shape = shape}, camera)
 end
 
@@ -81,14 +82,22 @@ function camera:move(x,y)
 	return self
 end
 
+function camera:setScale(sx,sy)
+	self.sx,self.sy = sx,sy or sx
+end
+
+function camera:scale(sx,sy)
+	self.sx,self.sy = self.sx * sx,self.sy * (sy or sx)
+end
+
 function camera:attach()
 	-- draw poly mask
 	lg.push()
 	local shapecx,shapecy = self.shape:center()
 	lg.setStencil(self._stencil)
 	-- transform view in viewport
-	local cx,cy = vec.div(self.zoom*2,shapecx*2,shapecy*2)
-	lg.scale(self.zoom)
+	local cx,cy = shapecx*2/(self.sx*2),shapecy*2/(self.sy*2)
+	lg.scale(self.sx,self.sy)
 	lg.translate(cx, cy)
 	lg.rotate(self.r)
 	lg.translate(-self.x, -self.y)
@@ -109,13 +118,13 @@ function camera:cameraCoords(x,y)
 	local scx,scy = self.shape:center()
 	local w,h = scx*2,scy*2
 	x,y = vec.rotate(self.r, x-self.x, y-self.y)
-	return x*self.zoom + w/2, y*self.zoom + h/2
+	return x*self.sx + w/2, y*self.sy + h/2
 end
 
 function camera:worldCoords(x,y)
 	local scx,scy = self.shape:center()
 	local w,h = scx*2,scy*2
-	x,y = vec.rotate(-self.r, vec.div(self.zoom, x-w/2, y-h/2))
+	x,y = vec.rotate(-self.r, (x-w/2)/self.sx, (y-h/2)/self.sy)
 	return x+self.x, y+self.y
 end
 
