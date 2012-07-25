@@ -45,7 +45,7 @@ cam = require'camera'
 
 -- create a new camera object
 -- Whence created, the camera will have a circular shape at point (0,0) with radius = 100. The camera will also center on point (10,10) in the scene. 
-cam1 = cam(10,10,1,0,shapes.newCircleShape(0,0,100))
+cam1 = cam(shapes.newCircleShape(0,0,100),10,10,0,1)
 
 -- move the camera 10 units along the x-axis, and increase the size of the shape
 cam1.shape:move(10,0), cam1.shape:scale(2)
