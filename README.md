@@ -17,6 +17,8 @@ cam1 = newCamera(shape,x,y,r,sx,sy) -- where shape is a shape defined by the sha
 
 You can transform the scene like the original module with the camera's methods. There are also some new functions to play with:
 
+**Note that `camera.zoom` was removed and is now replaced with `camera.sx`,`camera.sy`**
+
 `camera:setScale(sx,sy)` sets the scene's scale, sy is equal to sx if omitted
 
 `camera:scale(sx,sy)` scales the scene by this amount, sy is equal to sx if omitted
