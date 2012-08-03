@@ -65,10 +65,10 @@ local function new(shape,x,y,r,sx,sy)
 		shape:draw('fill')
 	end)
 	x,y		= x or lg.getWidth()/2, y or lg.getHeight()/2
-	sx = sx or 1
+	sx		= sx or 1
 	sy,r	= sy or sx,r or 0
 	return setmetatable(
-		{x = x, y = y, sx = sx, sy = sy, r = r, 
+		{x = x, y = y, sx = sx, sy = sy, r = r,
 		_stencil = _stencil,shape = shape}, camera)
 end
 
@@ -96,9 +96,8 @@ function camera:attach()
 	local shapecx,shapecy = self.shape:center()
 	lg.setStencil(self._stencil)
 	-- transform view in viewport
-	local cx,cy = shapecx*2/(self.sx*2),shapecy*2/(self.sy*2)
+	lg.translate(shapecx, shapecy)
 	lg.scale(self.sx,self.sy)
-	lg.translate(cx, cy)
 	lg.rotate(self.r)
 	lg.translate(-self.x, -self.y)
 end
@@ -116,15 +115,14 @@ end
 
 function camera:cameraCoords(x,y)
 	local scx,scy = self.shape:center()
-	local w,h = scx*2,scy*2
 	x,y = vec.rotate(self.r, x-self.x, y-self.y)
-	return x*self.sx + w/2, y*self.sy + h/2
+	return x*self.sx + scx, y*self.sy + scy
 end
 
 function camera:worldCoords(x,y)
 	local scx,scy = self.shape:center()
-	local w,h = scx*2,scy*2
-	x,y = vec.rotate(-self.r, (x-w/2)/self.sx, (y-h/2)/self.sy)
+	x,y	= (x-scx)/self.sx, (y-scy)/self.sy
+	x,y	= vec.rotate(-self.r, x, y)
 	return x+self.x, y+self.y
 end
 

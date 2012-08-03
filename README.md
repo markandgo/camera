@@ -6,36 +6,117 @@ This is an edit of vrld's camera module. See for details: [HUMP] (http://vrld.gi
 
 It requires the shapes module from vrld to work! See for details: [Hardon Collider] (http://vrld.github.com/HardonCollider/index.html)
 
-This version allows each camera object to have a custom shape. This allows you to limit drawing operations to the shape's boundary. The function to create a new camera object has a new argument to determine its shape. Shapes must be convex to work properly.
+This version allows each camera object to have a custom shape. It allows you to limit drawing operations to the shape's boundary by using stencils **+0.8.0**. The function to create a new camera object has a new argument to determine its shape.
 
 ````lua
-newCamera = require 'camera'
-cam1 = newCamera(shape,x,y,r,sx,sy) -- where shape is a shape defined by the shapes module
+new		= require 'camera'
+camera	= new(shape,x,y,r,sx,sy) -- where shape is a shape defined by the shapes module
 ````
 
 ## Camera Functions
 
-You can transform the scene like the original module with the camera's methods. There are also some new functions to play with:
+**`camera.zoom` has been replaced with `camera.sx` and `camera.sy`**
 
-**Note that `camera.zoom` was removed and is now replaced with `camera.sx`,`camera.sy`**
+You can transform the scene like the original module with the camera's methods. The following functions are new:
 
-`camera:setScale(sx,sy)` sets the scene's scale, sy is equal to sx if omitted
+-------------------
+`camera:setScale(sx,sy)` 
 
-`camera:scale(sx,sy)` scales the scene by this amount, sy is equal to sx if omitted
+Arguments:
 
-`camera:worldContains(x,y)` returns `true` if your scene's point is within the shape.
+**number** `sx` `sy` 
 
-`camera:worldBbox()` returns `x1,y1,x2,y2`, which are the scene's coordinates of your viewport's axis aligned bounding box. `(x1,y1)` and `(x2,y2)` are the opposite vertices of the box.
+Scales to set along the x and y axis. Shortcut for `camera.sx = sx` `camera.sy = sy`
 
-`camera:worldIntersectsRay(x,y,dx,dy)` returns `true` if your scene's ray is intersecting your shape.
+Returns:
+
+**nothing**
+
+-------------------
+`camera:scale(sx,sy)`
+
+Arguments:
+
+**number** `sx` `sy` 
+
+Scale factors along the x and y axis. Shortcut for `camera.sx = camera.sx*sx` `camera.sy = camera.sy*sy`
+
+Returns:
+
+**nothing**
+
+-------------------
+`contain = camera:worldContains(x,y)` 
+
+Arguments:
+
+**number** `x` `y` 
+
+Coordinates of the point in the scene
+
+Returns:
+
+**boolean** `contain`
+
+True if the camera's shape contains the scene's point
+
+-------------------
+`x1,y1,x2,y2 = camera:worldBbox()` 
+
+Arguments:
+
+**nothing**
+
+Returns:
+
+**number** `x1,y1,x2,y2`
+
+The upper left (x1,y1) and lower right vertices (x2,y2) of the shape's bbox in scene coordinates
+
+-------------------
+`intersect = camera:worldIntersectsRay(x,y,dx,dy)` 
+
+Arguments:
+
+**number** `x,y,dx,dy` 
+
+The origin and direction of the ray
+
+Returns:
+
+**boolean** `intersect` 
+
+true if the scene's ray intersects the camera's shape
 
 ## Shape Functions
 
-Using the shape's methods for each camera object allows you to manipulate its shape without transforming the scene. There also two new methods for each shape:
+Using the shape's methods for each camera object allows you to manipulate its shape without transforming the scene. Additional methods are as follow:
 
-`camera.shape:setScale(s)` sets the absolute scale of the shape.
+-------------------
+`camera.shape:setScale(s)`
 
-`camera.shape:getScale(s)` returns the absolute scale of the shape.
+Arguments:
+
+**number** `s` 
+
+the scale to set for the shape
+
+Returns:
+
+**nothing**
+
+-------------------
+`s = camera.shape:getScale()`
+
+Arguments:
+
+**nothing**
+
+Returns:
+
+**number** `s` 
+
+the current scale of the shape
 
 ## Example
 
