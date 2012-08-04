@@ -24,52 +24,47 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]--
 
-local _PATH = (...):match('^(.*[%./])[^%.%/]+$') or ''
-local vec = require(_PATH..'vector-light')
-local lg = love.graphics
-
 local camera = {}
 camera.__index = camera
+
+local lg = love.graphics
+local cos = math.cos
+local sin = math.sin
+local abs = math.abs
+
+local inverseShear = function(x,y,kx,ky)
+	local a,b,c,d = 1,kx,ky,1
+	local f = a*d-b*c
+	a,b,c,d = a/f,-b/f,-c/f,d/f
+	return d*x+b*y,c*x+a*y
+end
+
+local rotate = function(theta,x,y)
+	return x*cos(theta)-y*sin(theta),x*sin(theta)+y*cos(theta)
+end
+
+local getCenter = function(self)
+	if not self.shape then return lg.getWidth()/2,lg.getHeight()/2 end
+	return self.shape:center()
+end
 -------------------
 -- public interface
 -------------------
-local function new(shape,x,y,r,sx,sy)
-	-- new camera with shape boundary
-	shape._invertScale = 1
-	
-	-------------------
-	-- modified scaling
-	-------------------
-	local scale = shape.scale
-	
-	local _setScale = function(self,s)
-		assert(s > 0, 'scale must be greater than 0!')
-		scale(self,self._invertScale)
-		scale(self,s)
-		self._invertScale = 1/s
+local function new(shape,x,y,r,sx,sy,kx,ky)
+	if type(shape) == 'number' then
+		shape,x,y,r,sx,sy,kx,ky = nil,shape,x,y,r,sx,sy,kx
 	end
-	local _scale = function(self,s)
-		assert(s > 0, 'scale must be greater than 0!')
-		scale(self,s)
-		self._invertScale = self._invertScale / s
-	end
-	local _getScale = function(self)
-		return 1/self._invertScale
-	end
-	
-	shape.scale		= _scale
-	shape.setScale	= _setScale
-	shape.getScale	= _getScale
-	
+	local t -- closure for swappable/optional shape
 	local _stencil = lg.newStencil(function()
-		shape:draw('fill')
+		t.shape:draw('fill')
 	end)
 	x,y		= x or lg.getWidth()/2, y or lg.getHeight()/2
 	sx		= sx or 1
 	sy,r	= sy or sx,r or 0
-	return setmetatable(
-		{x = x, y = y, sx = sx, sy = sy, r = r,
-		_stencil = _stencil,shape = shape}, camera)
+	kx,ky	= kx or 0,ky or 0
+	t = {x = x, y = y, sx = sx, sy = sy, r = r, kx = kx, ky = ky,
+		_stencil = _stencil,shape = shape}
+	return setmetatable(t,camera)
 end
 
 function camera:rotate(phi)
@@ -87,23 +82,32 @@ function camera:setScale(sx,sy)
 end
 
 function camera:scale(sx,sy)
-	self.sx,self.sy = self.sx * sx,self.sy * (sy or sx)
+	self.sx,self.sy = self.sx*sx,self.sy*(sy or sx)
+end
+
+function camera:setShear(kx,ky)
+	self.kx,self.ky = kx,ky
+end
+
+function camera:shear(kx,ky)
+	self.kx,self.ky = self.kx*kx,self.ky*ky
 end
 
 function camera:attach()
 	-- draw poly mask
 	lg.push()
-	local shapecx,shapecy = self.shape:center()
-	lg.setStencil(self._stencil)
+	local cx,cy = getCenter(self)
+	if self.shape then lg.setStencil(self._stencil) end
 	-- transform view in viewport
-	lg.translate(shapecx, shapecy)
+	lg.translate(cx, cy)
+	lg.shear(self.kx,self.ky)
 	lg.scale(self.sx,self.sy)
 	lg.rotate(self.r)
 	lg.translate(-self.x, -self.y)
 end
 
 function camera:detach()
-	lg.setStencil()
+	if self.shape then lg.setStencil() end
 	lg.pop()
 end
 
@@ -114,15 +118,20 @@ function camera:draw(func)
 end
 
 function camera:cameraCoords(x,y)
-	local scx,scy = self.shape:center()
-	x,y = vec.rotate(self.r, x-self.x, y-self.y)
-	return x*self.sx + scx, y*self.sy + scy
+	local cx,cy = getCenter(self)
+	x,y = rotate(self.r, x-self.x, y-self.y)
+	x,y = x*self.sx,y*self.sy
+	x,y = x+self.kx*y,y+self.ky*x
+	return x + cx, y + cy
 end
 
 function camera:worldCoords(x,y)
-	local scx,scy = self.shape:center()
-	x,y	= (x-scx)/self.sx, (y-scy)/self.sy
-	x,y	= vec.rotate(-self.r, x, y)
+	assert(not (abs(self.kx) == 1 and self.kx == self.ky),'Not possible to convert coordinates b/c of shear factors -> (1,1) or (-1,-1)')
+	local cx,cy = getCenter(self)
+	x,y	= x-cx,y-cy
+	x,y = inverseShear(x,y,self.kx,self.ky)
+	x,y	= x/self.sx, y/self.sy
+	x,y	= rotate(-self.r, x, y)
 	return x+self.x, y+self.y
 end
 
@@ -131,7 +140,7 @@ function camera:mousepos()
 end
 
 -------------------
--- world functions
+-- world functions, NOT available when shapeless
 -------------------
 function camera:worldContains(x,y)
 	return self.shape:contains(self:cameraCoords(x,y))

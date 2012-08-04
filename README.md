@@ -1,19 +1,28 @@
-# hump.camera
+# hump.camera ##########
 
 Original LOVE thread: [link] (https://love2d.org/forums/viewtopic.php?f=5&t=10124)
 
 This is an edit of vrld's camera module. See for details: [HUMP] (http://vrld.github.com/hump/)
 
-It requires the shapes module from vrld to work! See for details: [Hardon Collider] (http://vrld.github.com/HardonCollider/index.html)
+You can use the shapes module from vrld to augment the camera! See for details: [Hardon Collider] (http://vrld.github.com/HardonCollider/index.html)
 
-This version allows each camera object to have a custom shape. It allows you to limit drawing operations to the shape's boundary by using stencils **+0.8.0**. The function to create a new camera object has a new argument to determine its shape.
+This version allows each camera object to have an *optional* shape, which limits drawing operations to the shape's boundary by using stencils **+0.8.0**. The function to create a new camera object has a new argument to determine its shape.
 
 ````lua
 new		= require 'camera'
-camera	= new(shape,x,y,r,sx,sy) -- where shape is a shape defined by the shapes module
+camera	= new(shape,x,y,r,sx,sy,kx,ky) -- where shape is a shape defined by the shapes module
 ````
 
-## Camera Functions
+To use the camera module without the shapes module, omit the shape argument:
+
+````lua
+new		= require 'camera'
+camera	= new(x,y,r,sx,sy,kx,ky)
+````
+
+You can add/remove/change a shape at anytime by changing `camera.shape` value. Some functions are not available when shapeless.
+
+## New Functions ##########
 
 **`camera.zoom` has been replaced with `camera.sx` and `camera.sy`**
 
@@ -46,6 +55,35 @@ Returns:
 **nothing**
 
 -------------------
+`camera:setShear(kx,ky)` 
+
+Arguments:
+
+**number** `kx` `ky` 
+
+Set shear factors along the x and y axis. Shortcut for `camera.kx = kx` `camera.ky = ky`
+
+Returns:
+
+**nothing**
+
+-------------------
+`camera:shear(kx,ky)`
+
+Arguments:
+
+**number** `kx` `ky` 
+
+Shear factors along the x and y axis. Shortcut for `camera.kx = camera.kx*kx` `camera.ky = camera.ky*ky`
+
+Returns:
+
+**nothing**
+
+## New Queries ##########
+
+**Not available when shapeless**
+
 `contain = camera:worldContains(x,y)` 
 
 Arguments:
@@ -88,37 +126,8 @@ Returns:
 
 true if the scene's ray intersects the camera's shape
 
-## Shape Functions
 
-Using the shape's methods for each camera object allows you to manipulate its shape without transforming the scene. Additional methods are as follow:
-
--------------------
-`camera.shape:setScale(s)`
-
-Arguments:
-
-**number** `s` 
-
-the scale to set for the shape
-
-Returns:
-
-**nothing**
-
--------------------
-`s = camera.shape:getScale()`
-
-Arguments:
-
-**nothing**
-
-Returns:
-
-**number** `s` 
-
-the current scale of the shape
-
-## Example
+## Example ##########
 
 ````lua
 shapes = require'shapes'
