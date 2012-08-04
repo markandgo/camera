@@ -30,10 +30,17 @@ local lg = love.graphics
 
 local camera = {}
 camera.__index = camera
+
+local inverseShear = function(x,y,kx,ky)
+	local a,b,c,d = 1,kx,ky,1
+	local f = a*d-b*c
+	a,b,c,d = a/f,-b/f,-c/f,d/f
+	return d*x+b*y,c*x+a*y
+end
 -------------------
 -- public interface
 -------------------
-local function new(shape,x,y,r,sx,sy)
+local function new(shape,x,y,r,sx,sy,kx,ky)
 	-- new camera with shape boundary
 	shape._invertScale = 1
 	
@@ -67,8 +74,9 @@ local function new(shape,x,y,r,sx,sy)
 	x,y		= x or lg.getWidth()/2, y or lg.getHeight()/2
 	sx		= sx or 1
 	sy,r	= sy or sx,r or 0
+	kx,ky	= kx or 0,ky or 0
 	return setmetatable(
-		{x = x, y = y, sx = sx, sy = sy, r = r,
+		{x = x, y = y, sx = sx, sy = sy, r = r, kx = kx, ky = ky,
 		_stencil = _stencil,shape = shape}, camera)
 end
 
@@ -90,6 +98,14 @@ function camera:scale(sx,sy)
 	self.sx,self.sy = self.sx * sx,self.sy * (sy or sx)
 end
 
+function camera:setShear(kx,ky)
+	self.kx,self.ky = kx,ky
+end
+
+function camera:shear(kx,ky)
+	self.kx,self.ky = self.kx*kx,self.ky*ky
+end
+
 function camera:attach()
 	-- draw poly mask
 	lg.push()
@@ -97,6 +113,7 @@ function camera:attach()
 	lg.setStencil(self._stencil)
 	-- transform view in viewport
 	lg.translate(shapecx, shapecy)
+	lg.shear(self.kx,self.ky)
 	lg.scale(self.sx,self.sy)
 	lg.rotate(self.r)
 	lg.translate(-self.x, -self.y)
@@ -116,12 +133,17 @@ end
 function camera:cameraCoords(x,y)
 	local scx,scy = self.shape:center()
 	x,y = vec.rotate(self.r, x-self.x, y-self.y)
-	return x*self.sx + scx, y*self.sy + scy
+	x,y = x*self.sx,y*self.sy
+	x,y = x+self.kx*y,y+self.ky*x
+	return x + scx, y + scy
 end
 
 function camera:worldCoords(x,y)
+	assert(not (math.abs(self.kx) == 1 and self.kx == self.ky),'Not possible to convert coordinates b/c of shear factors -> (1,1) or (-1,-1)')
 	local scx,scy = self.shape:center()
-	x,y	= (x-scx)/self.sx, (y-scy)/self.sy
+	x,y	= x-scx,y-scy
+	x,y = inverseShear(x,y,self.kx,self.ky)
+	x,y	= x/self.sx, y/self.sy
 	x,y	= vec.rotate(-self.r, x, y)
 	return x+self.x, y+self.y
 end

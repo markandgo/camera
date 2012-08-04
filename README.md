@@ -10,7 +10,7 @@ This version allows each camera object to have a custom shape. It allows you to 
 
 ````lua
 new		= require 'camera'
-camera	= new(shape,x,y,r,sx,sy) -- where shape is a shape defined by the shapes module
+camera	= new(shape,x,y,r,sx,sy,kx,ky) -- where shape is a shape defined by the shapes module
 ````
 
 ## Camera Functions
@@ -40,6 +40,32 @@ Arguments:
 **number** `sx` `sy` 
 
 Scale factors along the x and y axis. Shortcut for `camera.sx = camera.sx*sx` `camera.sy = camera.sy*sy`
+
+Returns:
+
+**nothing**
+
+-------------------
+`camera:setShear(kx,ky)` 
+
+Arguments:
+
+**number** `kx` `ky` 
+
+Set shear factors along the x and y axis. Shortcut for `camera.kx = kx` `camera.ky = ky`
+
+Returns:
+
+**nothing**
+
+-------------------
+`camera:shear(kx,ky)`
+
+Arguments:
+
+**number** `kx` `ky` 
+
+Shear factors along the x and y axis. Shortcut for `camera.kx = camera.kx*kx` `camera.ky = camera.ky*ky`
 
 Returns:
 
