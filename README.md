@@ -33,9 +33,9 @@ You can transform the scene like the original module with the camera's methods. 
 
 Arguments:
 
-**number** `sx` `sy` 
+**number** `sx` `sy (sx)` 
 
-Scales to set along the x and y axis. Shortcut for `camera.sx = sx` `camera.sy = sy`
+Scales to set along the x and y axis. Shortcut for `camera.sx = sx` `camera.sy = sy or sx`
 
 Returns:
 
@@ -46,9 +46,9 @@ Returns:
 
 Arguments:
 
-**number** `sx` `sy` 
+**number** `sx` `sy (sx)` 
 
-Scale factors along the x and y axis. Shortcut for `camera.sx = camera.sx*sx` `camera.sy = camera.sy*sy`
+Scale factors along the x and y axis. Shortcut for `camera.sx = camera.sx*sx` `camera.sy = camera.sy*(sy or sx)`
 
 Returns:
 
