@@ -24,18 +24,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]--
 
-local camera = {}
+local camera   = {}
 camera.__index = camera
 
-local lg = love.graphics
+local lg  = love.graphics
 local cos = math.cos
 local sin = math.sin
 local abs = math.abs
 
 local inverseShear = function(x,y,kx,ky)
 	local a,b,c,d = 1,kx,ky,1
-	local f = a*d-b*c
-	a,b,c,d = a/f,-b/f,-c/f,d/f
+	local f       = a*d-b*c
+	a,b,c,d       = a/f,-b/f,-c/f,d/f
 	return d*x+b*y,c*x+a*y
 end
 
@@ -58,11 +58,11 @@ local function new(shape,x,y,r,sx,sy,kx,ky)
 	local _stencil = lg.newStencil(function()
 		t.shape:draw('fill')
 	end)
-	x,y		= x or lg.getWidth()/2, y or lg.getHeight()/2
-	sx		= sx or 1
-	sy,r	= sy or sx,r or 0
-	kx,ky	= kx or 0,ky or 0
-	t = {x = x, y = y, sx = sx, sy = sy, r = r, kx = kx, ky = ky,
+	x,y   = x or lg.getWidth()/2, y or lg.getHeight()/2
+	sx    = sx or 1
+	sy,r  = sy or sx,r or 0
+	kx,ky = kx or 0,ky or 0
+	t     = {x = x, y = y, sx = sx, sy = sy, r = r, kx = kx, ky = ky,
 		_stencil = _stencil,shape = shape}
 	return setmetatable(t,camera)
 end
@@ -128,10 +128,10 @@ end
 function camera:worldCoords(x,y)
 	assert(not (abs(self.kx) == 1 and self.kx == self.ky),'Not possible to convert coordinates b/c of shear factors -> (1,1) or (-1,-1)')
 	local cx,cy = getCenter(self)
-	x,y	= x-cx,y-cy
+	x,y = x-cx,y-cy
 	x,y = inverseShear(x,y,self.kx,self.ky)
-	x,y	= x/self.sx, y/self.sy
-	x,y	= rotate(-self.r, x, y)
+	x,y = x/self.sx, y/self.sy
+	x,y = rotate(-self.r, x, y)
 	return x+self.x, y+self.y
 end
 
@@ -155,8 +155,8 @@ end
 
 function camera:worldIntersectsRay(x,y,dx,dy)
 	local x2,y2 = self:cameraCoords(x+dx,y+dy)
-	x,y = self:cameraCoords(x,y)
-	dx,dy = x2-x,y2-y
+	x,y         = self:cameraCoords(x,y)
+	dx,dy       = x2-x,y2-y
 	return self.shape:intersectsRay(x,y,dx,dy)
 end
 
