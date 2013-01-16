@@ -129,7 +129,7 @@ function camera:worldCoords(x,y)
 	return x+self.x, y+self.y
 end
 
-function camera:mousepos()
+function camera:mouseWorldPos()
 	return self:worldCoords(love.mouse.getPosition())
 end
 
@@ -153,7 +153,7 @@ function camera:worldBbox()
 	return x1,y1,x2,y2
 end
 
-function camera:worldIntersectsRay(x,y,dx,dy)
+function camera:intersectsWorldRay(x,y,dx,dy)
 	local x2,y2 = self:cameraCoords(x+dx,y+dy)
 	x,y         = self:cameraCoords(x,y)
 	dx,dy       = x2-x,y2-y
