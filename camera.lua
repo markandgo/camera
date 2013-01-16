@@ -1,5 +1,6 @@
 --[[
 Copyright (c) 2010-2012 Matthias Richter
+Modified by Minh Ngo
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -68,7 +69,7 @@ function camera:rotate(phi)
 	return self
 end
 
-function camera:setAngle(phi)
+function camera:rotateTo(phi)
 	self.r = phi
 	return self
 end
@@ -129,7 +130,7 @@ function camera:worldCoords(x,y)
 	return x+self.x, y+self.y
 end
 
-function camera:mouseWorldPos()
+function camera:mousePos()
 	return self:worldCoords(love.mouse.getPosition())
 end
 

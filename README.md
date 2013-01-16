@@ -22,7 +22,7 @@ You can add/remove a shape at anytime by changing `camera.shape` value. Some fun
 
 **camera.rotate**`(self,phi)`
 
-**camera.setAngle**`(self,phi)`
+**camera.rotateTo**`(self,phi)`
 
 **camera.move**`(self,dx,dy)`
 
@@ -49,7 +49,7 @@ camera:detach()
 
 **camera.cameraCoords**`(self,x,y)`
 
-**camera.mouseWorldPos**`(self)`
+**camera.mousePos**`(self)`
 
 ## Extra Functions ##########
 
