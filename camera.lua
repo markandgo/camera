@@ -31,6 +31,7 @@ local lg  = love.graphics
 local cos = math.cos
 local sin = math.sin
 local abs = math.abs
+local max,min = math.max,math.min
 
 local inverseShear = function(x,y,kx,ky)
 	local a,b,c,d = 1,kx,ky,1
@@ -62,8 +63,11 @@ local function new(shape,x,y,r,sx,sy,kx,ky)
 	sx    = sx or 1
 	sy,r  = sy or sx,r or 0
 	kx,ky = kx or 0,ky or 0
-	t     = {x = x, y = y, sx = sx, sy = sy, r = r, kx = kx, ky = ky,
-		_stencil = _stencil,shape = shape}
+	t     = 
+		{
+			x = x, y = y, sx = sx, sy = sy, r = r, kx = kx, ky = ky,
+			_stencil = _stencil,shape = shape
+		}
 	return setmetatable(t,camera)
 end
 
@@ -72,8 +76,18 @@ function camera:rotate(phi)
 	return self
 end
 
-function camera:move(x,y)
-	self.x, self.y = self.x + x, self.y + y
+function camera:setAngle(phi)
+	self.r = phi
+	return self
+end
+
+function camera:move(dx,dy)
+	self.x, self.y = self.x + dx, self.y + dy
+	return self
+end
+
+function camera:moveTo(x,y)
+	self.x, self.y = x,y
 	return self
 end
 
@@ -140,16 +154,22 @@ function camera:mousepos()
 end
 
 -------------------
--- world functions, NOT available when shapeless
+--NOT available when shapeless
 -------------------
 function camera:worldContains(x,y)
 	return self.shape:contains(self:cameraCoords(x,y))
+end
+
+function camera:bbox()
+	return self.shape:bbox()
 end
 
 function camera:worldBbox()
 	local x1,y1,x2,y2 = self.shape:bbox()
 	x1,y1 = self:worldCoords(x1,y1)
 	x2,y2 = self:worldCoords(x2,y2)
+	x1,x2 = min(x1,x2),max(x1,x2)
+	y1,y2 = min(y1,y2),max(y1,y2)
 	return x1,y1,x2,y2
 end
 
