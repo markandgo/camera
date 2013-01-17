@@ -10,27 +10,27 @@ This version allows each camera object to have an *optional* shape, which limits
 
 ````lua
 new     = require 'camera'
-camera  = new(shape,x,y,r,sx,sy)
+camera  = new(shape,x,y,angle,zoom)
 
 -- no shape
-camera  = new(x,y,r,sx,sy)
+camera  = new(x,y,angle,zoom)
 ````
 
 You can add/remove a shape at anytime by changing `camera.shape` value. Some functions are not available when shapeless.
 
 ## Functions ##########
 
-**camera.rotate**`(self,phi)`
+**camera.rotate**`(self,angle)`
 
-**camera.rotateTo**`(self,phi)`
+**camera.rotateTo**`(self,angle)`
 
 **camera.move**`(self,dx,dy)`
 
 **camera.moveTo**`(self,x,y)`
 
-**camera.setScale**`(self,sx,sy or sx)`
+**camera.zoomTo**`(self,ratio)`
 
-**camera.scale**`(self,sx,sy or sx)`
+**camera.zoom**`(self,ratio)`
 
 **camera.attach**`(self)`
 Apply camera transformation

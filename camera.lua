@@ -45,32 +45,32 @@ end
 -------------------
 -- public interface
 -------------------
-function camera.new(shape,x,y,r,sx,sy)
+function camera.new(shape,x,y,angle,z)
 	if type(shape) == 'number' then
-		shape,x,y,r,sx,sy = nil,shape,x,y,r,sx
+		shape,x,y,angle,z = nil,shape,x,y,angle
 	end
 	local t -- closure for swappable/optional shape
 	local _stencil = lg.newStencil(function()
 		t.shape:draw('fill')
 	end)
 	x,y   = x or lg.getWidth()/2, y or lg.getHeight()/2
-	sx    = sx or 1
-	sy,r  = sy or sx,r or 0
+	z     = z or 1
+	angle = angle or 0
 	t     = 
 		{
-			x = x, y = y, sx = sx, sy = sy, r = r,
+			x = x, y = y, z = z, angle = angle,
 			_stencil = _stencil,shape = shape
 		}
 	return setmetatable(t,camera)
 end
 
-function camera:rotate(phi)
-	self.r = self.r + phi
+function camera:rotate(angle)
+	self.angle = self.angle + angle
 	return self
 end
 
-function camera:rotateTo(phi)
-	self.r = phi
+function camera:rotateTo(angle)
+	self.angle = angle
 	return self
 end
 
@@ -84,12 +84,14 @@ function camera:moveTo(x,y)
 	return self
 end
 
-function camera:setScale(sx,sy)
-	self.sx,self.sy = sx,sy or sx
+function camera:zoomTo(ratio)
+	self.z = ratio
+	return self
 end
 
-function camera:scale(sx,sy)
-	self.sx,self.sy = self.sx*sx,self.sy*(sy or sx)
+function camera:zoom(ratio)
+	self.z = self.z * ratio
+	return self
 end
 
 function camera:attach()
@@ -99,8 +101,8 @@ function camera:attach()
 	if self.shape then lg.setStencil(self._stencil) end
 	-- transform view in viewport
 	lg.translate(cx, cy)
-	lg.scale(self.sx,self.sy)
-	lg.rotate(self.r)
+	lg.scale(self.z)
+	lg.rotate(self.angle)
 	lg.translate(-self.x, -self.y)
 end
 
@@ -117,16 +119,13 @@ end
 
 function camera:cameraCoords(x,y)
 	local cx,cy = getCenter(self)
-	x,y = rotate(self.r, x-self.x, y-self.y)
-	x,y = x*self.sx,y*self.sy
-	return x + cx, y + cy
+	x,y = rotate(self.angle, x-self.x, y-self.y)
+	return x*self.z+cx,y*self.z+cx
 end
 
 function camera:worldCoords(x,y)
 	local cx,cy = getCenter(self)
-	x,y = x-cx,y-cy
-	x,y = x/self.sx, y/self.sy
-	x,y = rotate(-self.r, x, y)
+	x,y = rotate(-self.angle, (x-cx)/self.z, (y-cy)/self.z)
 	return x+self.x, y+self.y
 end
 
